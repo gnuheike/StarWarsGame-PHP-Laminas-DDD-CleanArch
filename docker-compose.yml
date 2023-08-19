@@ -1,0 +1,15 @@
+version: "3"
+services:
+  app:
+    build: .
+    image: mezzio-deploy-image
+    container_name: mezzio-deploy-container
+    restart: always
+    volumes:
+      - .:/var/www
+      - ./vendor:/var/www/vendor
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=dev
+    command: ["php", "-S", "0.0.0.0:8000", "-t", "public"]

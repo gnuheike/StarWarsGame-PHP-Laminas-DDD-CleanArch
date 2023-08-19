@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build image
+        run: sh build.sh
+
+      - name: Run tests
+        run: sh test.sh
+
+      - name: Check for outdated packages
+        run: sh check_outdated_packages.sh
