@@ -6,6 +6,7 @@ namespace StarWars\Presentation\Console\Command;
 
 use Exception;
 use RuntimeException;
+use StarWars\Application\Factory\FleetFactory;
 use StarWars\Application\UseCase\CreateSithFleet\CreateSithFleet;
 use StarWars\Application\UseCase\CreateSithFleet\SithFleetGenerator;
 use StarWars\Application\UseCase\CreateUserFleet\CreateUserFleet;
@@ -17,16 +18,12 @@ use StarWars\Application\UseCase\ProcessBattle\ProcessBattle;
 use StarWars\Application\UseCase\ProcessGame\ProcessGame;
 use StarWars\Application\UseCase\ProcessGame\ProcessGameResponse;
 use StarWars\Application\UseCase\StoreBattleResult\StoreBattleResult;
-use StarWars\Domain\Fleet\ShipInterface;
-use StarWars\Domain\FleetCombat\FleetCombatService;
 use StarWars\Domain\Repository\ShipRepositoryInterface;
 use StarWars\Domain\Repository\ShipsProviderInterface;
-use StarWars\Domain\Ship\ShipDamageControl\ShipDamageControl;
-use StarWars\Domain\Ship\ShipTargeting\RandomAliveShipTargetSelector;
+use StarWars\Domain\Ship\Ship;
 use StarWars\Infrastructure\ExternalServices\QuickMockerStarshipDataProvider\QuickMockerClient;
 use StarWars\Infrastructure\ExternalServices\QuickMockerStarshipDataProvider\QuickMockerShipMapper;
 use StarWars\Infrastructure\ExternalServices\QuickMockerStarshipDataProvider\QuickMockerShipProvider;
-use StarWars\Infrastructure\Factory\FleetFactory;
 use StarWars\Infrastructure\Persistence\Repository\InMemoryBattleResultRepository;
 use StarWars\Infrastructure\Persistence\Repository\InMemoryShipRepository;
 use Symfony\Component\Console\Command\Command;
@@ -76,12 +73,7 @@ final class ConsoleGameCommand extends Command
         $getPlayerFleet = new GetPlayerFleet($playerShipsRepository, $fleetFactory);
         $getSithFleet = new GetSithFleet($sithShipsRepository, $fleetFactory);
         $battle = new ProcessBattle(
-            new BattleFactory(
-                new FleetCombatService(
-                    new RandomAliveShipTargetSelector(),
-                    new ShipDamageControl()
-                )
-            )
+            new BattleFactory()
         );
 
         return new ProcessGame(
@@ -174,20 +166,20 @@ final class ConsoleGameCommand extends Command
     }
 
     /**
-     * @param ShipInterface[] $ships
+     * @param Ship[] $ships
      * @return int
      */
     private function getShipsCost(array $ships): int
     {
         return array_reduce(
             $ships,
-            static fn(int $carry, ShipInterface $ship) => $carry + $ship->getCost(),
+            static fn(int $carry, Ship $ship) => $carry + $ship->cost->getValue(),
             0
         );
     }
 
     /**
-     * @param ShipInterface[] $ships
+     * @param Ship[] $ships
      * @param OutputInterface $output
      * @return void
      */
@@ -196,7 +188,7 @@ final class ConsoleGameCommand extends Command
         $count = count($ships);
         $namesList = implode(
             ', ',
-            array_map(static fn($ship) => $ship->getName(), $ships)
+            array_map(static fn($ship) => $ship->name->getValue(), $ships)
         );
 
         $output->writeln(

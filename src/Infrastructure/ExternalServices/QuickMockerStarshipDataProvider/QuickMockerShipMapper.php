@@ -19,11 +19,12 @@ class QuickMockerShipMapper
     {
         return new Ship(
             name: new ShipName($shipData['name']),
+            cost: new ShipCost((int)$shipData['cost_in_credits']),
             armor: new ShipArmor($shipData['body']),
             shields: new ShipShields($shipData['shields']),
             weaponSystem: new ShipWeaponSystem(
                 array_map(
-                    static fn (array $weaponData) => new ShipWeapon(
+                    static fn(array $weaponData) => new ShipWeapon(
                         name: $weaponData['name'],
                         amount: $weaponData['amount'],
                         damage: new ShipWeaponDamage(
@@ -33,8 +34,7 @@ class QuickMockerShipMapper
                     ),
                     $shipData['weapons']
                 )
-            ),
-            cost: new ShipCost((int)$shipData['cost_in_credits'])
+            )
         );
     }
 }

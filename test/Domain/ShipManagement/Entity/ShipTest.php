@@ -34,7 +34,7 @@ class ShipTest extends TestCase
     public function testIsShieldsDepleted(): void
     {
         $this->shipShields->method('isDepleted')->willReturn(true);
-        $this->assertTrue($this->ship->isShieldsDepleted());
+        $this->assertTrue($this->ship->shields->isDepleted());
     }
 
     public function testReceiveShieldsDamage(): void
@@ -45,7 +45,7 @@ class ShipTest extends TestCase
             ->with($damage)
             ->willReturn($damage);
 
-        $this->assertEquals($damage, $this->ship->receiveShieldsDamage($damage));
+        $this->assertEquals($damage, $this->ship->shields->receiveDamage($damage));
     }
 
     public function testReceiveArmorDamage(): void
@@ -56,12 +56,12 @@ class ShipTest extends TestCase
             ->with($damage)
             ->willReturn($damage);
 
-        $this->assertEquals($damage, $this->ship->receiveArmorDamage($damage));
+        $this->assertEquals($damage, $this->ship->armor->receiveDamage($damage));
     }
 
     public function testReturnsWeapons(): void
     {
-        $this->assertEquals($this->weapons, $this->ship->getWeaponSystem());
+        $this->assertEquals($this->weapons, $this->ship->weaponSystem);
     }
 
     protected function setUp(): void
@@ -76,10 +76,10 @@ class ShipTest extends TestCase
 
         $this->ship = new Ship(
             $this->shipName,
+            $this->shipCost,
             $this->shipArmor,
             $this->shipShields,
             $this->weapons,
-            $this->shipCost,
             $this->targetSelector
         );
     }

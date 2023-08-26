@@ -143,6 +143,7 @@ class BattleTest extends TestCase
     {
         return new Ship(
             new ShipName('Death Star'),
+            new ShipCost(1000000000000),
             new ShipArmor(100000000),
             new ShipShields(7000000),
             new ShipWeaponSystem(
@@ -164,7 +165,6 @@ class BattleTest extends TestCase
                     ),
                 ]
             ),
-            new ShipCost(1000000000000),
             new RandomAliveShipTargetSelector(),
         );
     }
@@ -173,10 +173,10 @@ class BattleTest extends TestCase
     {
         return new Ship(
             new ShipName('Rebel transport'),
+            new ShipCost(200000),
             new ShipArmor(1),
             new ShipShields(0),
             new ShipWeaponSystem([]),
-            new ShipCost(200000),
             new RandomAliveShipTargetSelector(),
         );
     }

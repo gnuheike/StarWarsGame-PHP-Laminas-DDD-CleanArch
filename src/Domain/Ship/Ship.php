@@ -6,29 +6,18 @@ namespace StarWars\Domain\Ship;
 
 use InvalidArgumentException;
 use StarWars\Domain\Fleet\Fleet;
-use StarWars\Domain\Fleet\ShipInterface;
 use StarWars\Domain\Ship\ShipTargeting\RandomAliveShipTargetSelector;
 
-class Ship implements ShipInterface
+class Ship
 {
     public function __construct(
-        private readonly ShipName $name,
-        private readonly ShipArmor $armor,
-        private readonly ShipShields $shields,
-        private readonly ShipWeaponSystem $weaponSystem,
-        private readonly ShipCost $cost,
+        public readonly ShipName $name,
+        public readonly ShipCost $cost,
+        public readonly ShipArmor $armor,
+        public readonly ShipShields $shields,
+        public readonly ShipWeaponSystem $weaponSystem,
         private readonly RandomAliveShipTargetSelector $targetSelector
     ) {
-    }
-
-    public function getName(): string
-    {
-        return $this->name->getValue();
-    }
-
-    public function getCost(): int
-    {
-        return $this->cost->getValue();
     }
 
     public function fireToFleet(Fleet $defendingFleet): void
@@ -43,7 +32,7 @@ class Ship implements ShipInterface
             throw new InvalidArgumentException('Cannot damage a destroyed ship');
         }
 
-        foreach ($this->getWeaponSystem()->getAllWeapons() as $weapon) {
+        foreach ($this->weaponSystem->getAllWeapons() as $weapon) {
             if ($damageReceiver->isDestroyed()) {
                 break;
             }
@@ -56,37 +45,17 @@ class Ship implements ShipInterface
         return $this->armor->isDepleted();
     }
 
-    public function getWeaponSystem(): ShipWeaponSystem
-    {
-        return $this->weaponSystem;
-    }
-
     private function processWeaponDamageToShip(Ship $damageReceiver, ShipWeapon $weapon): void
     {
         $damageValue = $weapon->getWeaponDamage()->getDamageValue() * $weapon->getAmount();
 
-        if (!$damageReceiver->isShieldsDepleted()) {
-            $exceedDamage = $damageReceiver->receiveShieldsDamage($damageValue);
+        if (!$damageReceiver->shields->isDepleted()) {
+            $exceedDamage = $damageReceiver->shields->receiveDamage($damageValue);
             $damageValue = $exceedDamage;
         }
 
         if ($damageValue > 0) {
-            $damageReceiver->receiveArmorDamage($damageValue);
+            $damageReceiver->armor->receiveDamage($damageValue);
         }
-    }
-
-    public function isShieldsDepleted(): bool
-    {
-        return $this->shields->isDepleted();
-    }
-
-    public function receiveShieldsDamage(int $damage): int
-    {
-        return $this->shields->receiveDamage($damage);
-    }
-
-    public function receiveArmorDamage(int $damage): int
-    {
-        return $this->armor->receiveDamage($damage);
     }
 }

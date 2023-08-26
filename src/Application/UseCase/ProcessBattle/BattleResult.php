@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace StarWars\Application\UseCase\ProcessBattle;
 
 use InvalidArgumentException;
-use StarWars\Domain\Fleet\ShipInterface;
+use StarWars\Domain\Ship\Ship;
 
 class BattleResult
 {
@@ -13,15 +13,15 @@ class BattleResult
     private BattleFleetEnum $winner;
 
     /**
-     * @param ShipInterface[] $playerShips
-     * @param ShipInterface[] $sithShips
+     * @param Ship[] $playerShips
+     * @param Ship[] $sithShips
      */
     public function __construct(
         private readonly array $playerShips,
         private readonly array $sithShips,
     ) {
         foreach (array_merge($this->playerShips, $this->sithShips) as $ship) {
-            if (!$ship instanceof ShipInterface) {
+            if (!$ship instanceof Ship) {
                 throw new InvalidArgumentException('Invalid ship type');
             }
         }
@@ -49,13 +49,13 @@ class BattleResult
         $this->steps++;
     }
 
-    public function setWinner(BattleFleetEnum $winner): void
-    {
-        $this->winner = $winner;
-    }
-
     public function getWinner(): BattleFleetEnum
     {
         return $this->winner;
+    }
+
+    public function setWinner(BattleFleetEnum $winner): void
+    {
+        $this->winner = $winner;
     }
 }

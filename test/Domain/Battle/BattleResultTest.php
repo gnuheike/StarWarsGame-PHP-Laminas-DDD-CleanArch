@@ -2,22 +2,24 @@
 
 namespace Test\Domain\Battle;
 
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use StarWars\Application\UseCase\ProcessBattle\BattleFleetEnum;
 use StarWars\Application\UseCase\ProcessBattle\BattleResult;
-use StarWars\Domain\Fleet\ShipInterface;
+use StarWars\Domain\Ship\Ship;
+use stdClass;
 
 class BattleResultTest extends TestCase
 {
     public function testBattleResult(): void
     {
         $ships1 = [
-            $this->createMock(ShipInterface::class),
-            $this->createMock(ShipInterface::class)
+            $this->createMock(Ship::class),
+            $this->createMock(Ship::class)
         ];
         $ships2 = [
-            $this->createMock(ShipInterface::class),
-            $this->createMock(ShipInterface::class)
+            $this->createMock(Ship::class),
+            $this->createMock(Ship::class)
         ];
         $battleResult = new BattleResult($ships1, $ships2);
 
@@ -32,9 +34,10 @@ class BattleResultTest extends TestCase
         $this->assertSame(BattleFleetEnum::PLAYER_FLEET, $battleResult->getWinner());
     }
 
-    public function testInvalidParameters(): void {
-        $this->expectException(\InvalidArgumentException::class);
+    public function testInvalidParameters(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid ship type');
-        new BattleResult([new \stdClass()], []);
+        new BattleResult([new stdClass()], []);
     }
 }

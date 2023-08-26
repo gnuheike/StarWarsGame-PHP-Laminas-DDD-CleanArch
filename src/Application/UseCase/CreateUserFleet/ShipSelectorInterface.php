@@ -2,9 +2,10 @@
 
 namespace StarWars\Application\UseCase\CreateUserFleet;
 
-use StarWars\Domain\Fleet\ShipInterface;
+
+use StarWars\Domain\Ship\Ship;
 
 interface ShipSelectorInterface
 {
-    public function selectShip(array $ships): ?ShipInterface;
+    public function selectShip(array $ships): ?Ship;
 }

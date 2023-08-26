@@ -2,15 +2,14 @@
 
 namespace StarWars\Domain\Repository;
 
-use StarWars\Domain\Fleet\ShipInterface;
 use StarWars\Domain\Ship\Ship;
 
 interface ShipRepositoryInterface
 {
     /**
-     * @return ShipInterface[]
+     * @return Ship[]
      */
     public function getAllShips(): array;
 
-    public function addShip(ShipInterface $ship): void;
+    public function addShip(Ship $ship): void;
 }

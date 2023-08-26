@@ -6,6 +6,7 @@ namespace StarWars\Presentation\Console\Command;
 
 use StarWars\Application\UseCase\CreateUserFleet\ShipSelectorInterface;
 use StarWars\Domain\Fleet\ShipInterface;
+use StarWars\Domain\Ship\Ship;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -16,25 +17,25 @@ final class ConsoleShipSelector implements ShipSelectorInterface
     private const STOP = 'Stop';
 
     public function __construct(
-        private readonly InputInterface  $input,
+        private readonly InputInterface $input,
         private readonly OutputInterface $output,
-        private readonly QuestionHelper  $question
+        private readonly QuestionHelper $question
     ) {
     }
 
     /**
-     * @param ShipInterface[] $ships
-     * @return ?ShipInterface
+     * @param Ship[] $ships
+     * @return ?Ship
      */
-    public function selectShip(array $ships): ?ShipInterface
+    public function selectShip(array $ships): ?Ship
     {
         $shipByNames = [];
         foreach ($ships as $ship) {
             $shipDisplayTitle = sprintf(
                 '%s [%s%s%s]',
-                $ship->getName(),
+                $ship->name->getValue(),
                 "<fg=red>",
-                $this->humanReadableValue($ship->getCost()),
+                $this->humanReadableValue($ship->cost->getValue()),
                 "</>"
             );
             $shipByNames[$shipDisplayTitle] = $ship;
