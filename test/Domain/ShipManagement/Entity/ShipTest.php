@@ -8,6 +8,7 @@ use StarWars\Domain\Ship\ShipArmor;
 use StarWars\Domain\Ship\ShipCost;
 use StarWars\Domain\Ship\ShipName;
 use StarWars\Domain\Ship\ShipShields;
+use StarWars\Domain\Ship\ShipTargeting\RandomAliveShipTargetSelector;
 use StarWars\Domain\Ship\ShipWeapon;
 use StarWars\Domain\Ship\ShipWeaponSystem;
 
@@ -22,25 +23,7 @@ class ShipTest extends TestCase
     private ShipWeapon $shipWeapon;
     private ShipCost $shipCost;
 
-
-    protected function setUp(): void
-    {
-        $this->shipName = $this->createMock(ShipName::class);
-        $this->shipArmor = $this->createMock(ShipArmor::class);
-        $this->shipShields = $this->createMock(ShipShields::class);
-        $this->weapons = $this->createMock(ShipWeaponSystem::class);
-        $this->shipWeapon = $this->createMock(ShipWeapon::class);
-        $this->shipCost = $this->createMock(ShipCost::class);
-
-
-        $this->ship = new Ship(
-            $this->shipName,
-            $this->shipArmor,
-            $this->shipShields,
-            $this->weapons,
-            $this->shipCost
-        );
-    }
+    private RandomAliveShipTargetSelector $targetSelector;
 
     public function testIsDestroyed(): void
     {
@@ -79,5 +62,25 @@ class ShipTest extends TestCase
     public function testReturnsWeapons(): void
     {
         $this->assertEquals($this->weapons, $this->ship->getWeaponSystem());
+    }
+
+    protected function setUp(): void
+    {
+        $this->shipName = $this->createMock(ShipName::class);
+        $this->shipArmor = $this->createMock(ShipArmor::class);
+        $this->shipShields = $this->createMock(ShipShields::class);
+        $this->weapons = $this->createMock(ShipWeaponSystem::class);
+        $this->shipWeapon = $this->createMock(ShipWeapon::class);
+        $this->shipCost = $this->createMock(ShipCost::class);
+        $this->targetSelector = $this->createMock(RandomAliveShipTargetSelector::class);
+
+        $this->ship = new Ship(
+            $this->shipName,
+            $this->shipArmor,
+            $this->shipShields,
+            $this->weapons,
+            $this->shipCost,
+            $this->targetSelector
+        );
     }
 }

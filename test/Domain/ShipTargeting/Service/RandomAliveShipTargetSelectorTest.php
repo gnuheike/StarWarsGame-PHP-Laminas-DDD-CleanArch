@@ -5,16 +5,11 @@ namespace Test\Domain\ShipTargeting\Service;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use StarWars\Domain\Ship\Ship;
-use StarWars\Domain\ShipTargeting\RandomAliveShipTargetSelector;
+use StarWars\Domain\Ship\ShipTargeting\RandomAliveShipTargetSelector;
 
 class RandomAliveShipTargetSelectorTest extends TestCase
 {
     private RandomAliveShipTargetSelector $randomAliveShipTargetSelector;
-
-    protected function setUp(): void
-    {
-        $this->randomAliveShipTargetSelector = new RandomAliveShipTargetSelector();
-    }
 
     public function testGetShipFromArray(): void
     {
@@ -37,5 +32,10 @@ class RandomAliveShipTargetSelectorTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->randomAliveShipTargetSelector->getShipFromArray(['qwe']);
+    }
+
+    protected function setUp(): void
+    {
+        $this->randomAliveShipTargetSelector = new RandomAliveShipTargetSelector();
     }
 }

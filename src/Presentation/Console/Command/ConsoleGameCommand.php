@@ -11,6 +11,7 @@ use StarWars\Application\UseCase\CreateSithFleet\SithFleetGenerator;
 use StarWars\Application\UseCase\CreateUserFleet\CreateUserFleet;
 use StarWars\Application\UseCase\GetPlayerFleet\GetPlayerFleet;
 use StarWars\Application\UseCase\GetSithFleet\GetSithFleet;
+use StarWars\Application\UseCase\ProcessBattle\BattleFactory;
 use StarWars\Application\UseCase\ProcessBattle\BattleFleetEnum;
 use StarWars\Application\UseCase\ProcessBattle\ProcessBattle;
 use StarWars\Application\UseCase\ProcessGame\ProcessGame;
@@ -20,12 +21,11 @@ use StarWars\Domain\Fleet\ShipInterface;
 use StarWars\Domain\FleetCombat\FleetCombatService;
 use StarWars\Domain\Repository\ShipRepositoryInterface;
 use StarWars\Domain\Repository\ShipsProviderInterface;
-use StarWars\Domain\ShipDamageControl\Service\ShipDamageProcessor;
-use StarWars\Domain\ShipTargeting\RandomAliveShipTargetSelector;
+use StarWars\Domain\Ship\ShipDamageControl\ShipDamageControl;
+use StarWars\Domain\Ship\ShipTargeting\RandomAliveShipTargetSelector;
 use StarWars\Infrastructure\ExternalServices\QuickMockerStarshipDataProvider\QuickMockerClient;
 use StarWars\Infrastructure\ExternalServices\QuickMockerStarshipDataProvider\QuickMockerShipMapper;
 use StarWars\Infrastructure\ExternalServices\QuickMockerStarshipDataProvider\QuickMockerShipProvider;
-use StarWars\Infrastructure\Factory\BattleFactory;
 use StarWars\Infrastructure\Factory\FleetFactory;
 use StarWars\Infrastructure\Persistence\Repository\InMemoryBattleResultRepository;
 use StarWars\Infrastructure\Persistence\Repository\InMemoryShipRepository;
@@ -79,7 +79,7 @@ final class ConsoleGameCommand extends Command
             new BattleFactory(
                 new FleetCombatService(
                     new RandomAliveShipTargetSelector(),
-                    new ShipDamageProcessor()
+                    new ShipDamageControl()
                 )
             )
         );
@@ -90,25 +90,6 @@ final class ConsoleGameCommand extends Command
             $getPlayerFleet,
             $getSithFleet,
             $battle
-        );
-    }
-
-    private function createUserFleet(
-        InputInterface          $input,
-        OutputInterface         $output,
-        ShipsProviderInterface  $shipsProvider,
-        ShipRepositoryInterface $playerShipsRepository
-    ): CreateUserFleet {
-
-        $questionHelper = $this->getHelper('question');
-        if (!$questionHelper instanceof QuestionHelper) {
-            throw new RuntimeException('Question helper not found');
-        }
-
-        return new CreateUserFleet(
-            $shipsProvider,
-            new ConsoleShipSelector($input, $output, $questionHelper),
-            $playerShipsRepository
         );
     }
 
@@ -124,7 +105,7 @@ final class ConsoleGameCommand extends Command
      * @throws Exception
      */
     private function createSithFleet(
-        ShipsProviderInterface  $shipProvider,
+        ShipsProviderInterface $shipProvider,
         ShipRepositoryInterface $sithShipsRepository
     ): CreateSithFleet {
         return new CreateSithFleet(
@@ -134,26 +115,28 @@ final class ConsoleGameCommand extends Command
         );
     }
 
-    /**
-     * @param ShipInterface[] $ships
-     * @param OutputInterface $output
-     * @return void
-     */
-    private function displayShips(array $ships, OutputInterface $output): void
-    {
-        $count = count($ships);
-        $namesList = implode(
-            ', ',
-            array_map(static fn ($ship) => $ship->getName(), $ships)
-        );
+    private function createUserFleet(
+        InputInterface $input,
+        OutputInterface $output,
+        ShipsProviderInterface $shipsProvider,
+        ShipRepositoryInterface $playerShipsRepository
+    ): CreateUserFleet {
+        $questionHelper = $this->getHelper('question');
+        if (!$questionHelper instanceof QuestionHelper) {
+            throw new RuntimeException('Question helper not found');
+        }
 
-        $output->writeln(
-            sprintf(
-                'Fleet has %d ships: %s',
-                $count,
-                $namesList
-            )
+        return new CreateUserFleet(
+            $shipsProvider,
+            new ConsoleShipSelector($input, $output, $questionHelper),
+            $playerShipsRepository
         );
+    }
+
+    private function displaySithResults(ProcessGameResponse $response, OutputInterface $output): int
+    {
+        $output->writeln('Sith fleet won!');
+        return 0;
     }
 
     private function processPlayerResults(ProcessGameResponse $response, OutputInterface $output): int
@@ -166,28 +149,8 @@ final class ConsoleGameCommand extends Command
         return 0;
     }
 
-    /**
-     * @param ShipInterface[] $ships
-     * @return int
-     */
-    private function getShipsCost(array $ships): int
-    {
-        return array_reduce(
-            $ships,
-            static fn (int $carry, ShipInterface $ship) => $carry + $ship->getCost(),
-            0
-        );
-    }
-
-    private function displaySithResults(ProcessGameResponse $response, OutputInterface $output): int
-    {
-        $output->writeln('Sith fleet won!');
-        return 0;
-    }
-
     private function displayPlayerResults(ProcessGameResponse $response, OutputInterface $output): void
     {
-
         $output->writeln('Player fleet won!');
         $output->writeln('');
 
@@ -207,6 +170,41 @@ final class ConsoleGameCommand extends Command
 
         $output->writeln(
             sprintf('Player spent %s steps', $response->battleResult->getSteps())
+        );
+    }
+
+    /**
+     * @param ShipInterface[] $ships
+     * @return int
+     */
+    private function getShipsCost(array $ships): int
+    {
+        return array_reduce(
+            $ships,
+            static fn(int $carry, ShipInterface $ship) => $carry + $ship->getCost(),
+            0
+        );
+    }
+
+    /**
+     * @param ShipInterface[] $ships
+     * @param OutputInterface $output
+     * @return void
+     */
+    private function displayShips(array $ships, OutputInterface $output): void
+    {
+        $count = count($ships);
+        $namesList = implode(
+            ', ',
+            array_map(static fn($ship) => $ship->getName(), $ships)
+        );
+
+        $output->writeln(
+            sprintf(
+                'Fleet has %d ships: %s',
+                $count,
+                $namesList
+            )
         );
     }
 }

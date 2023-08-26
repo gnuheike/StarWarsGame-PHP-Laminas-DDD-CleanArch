@@ -3,6 +3,7 @@
 namespace Test\Application\UseCase\ProcessBattle;
 
 use PHPUnit\Framework\TestCase;
+use StarWars\Application\UseCase\ProcessBattle\BattleFactory;
 use StarWars\Application\UseCase\ProcessBattle\BattleFactoryInterface;
 use StarWars\Application\UseCase\ProcessBattle\BattleFleetEnum;
 use StarWars\Application\UseCase\ProcessBattle\ProcessBattle;
@@ -15,7 +16,7 @@ class ProcessBattleTest extends TestCase
     {
         $fleet1 = $this->createMock(Fleet::class);
         $fleet2 = $this->createMock(Fleet::class);
-        $battleFactory = $this->createMock(BattleFactoryInterface::class);
+        $battleFactory = $this->createMock(BattleFactory::class);
         $battle = $this->createMock(Battle::class);
 
         $battleFactory->expects($this->once())

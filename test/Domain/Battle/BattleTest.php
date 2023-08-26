@@ -10,57 +10,29 @@ use StarWars\Domain\FleetCombat\FleetCombatService;
 use StarWars\Domain\Ship\Ship;
 use StarWars\Domain\Ship\ShipArmor;
 use StarWars\Domain\Ship\ShipCost;
+use StarWars\Domain\Ship\ShipDamageControl\ShipDamageControl;
 use StarWars\Domain\Ship\ShipName;
 use StarWars\Domain\Ship\ShipShields;
+use StarWars\Domain\Ship\ShipTargeting\RandomAliveShipTargetSelector;
 use StarWars\Domain\Ship\ShipWeapon;
 use StarWars\Domain\Ship\ShipWeaponDamage;
 use StarWars\Domain\Ship\ShipWeaponSystem;
-use StarWars\Domain\ShipDamageControl\Service\ShipDamageProcessor;
-use StarWars\Domain\ShipTargeting\RandomAliveShipTargetSelector;
 
 class BattleTest extends TestCase
 {
     private Fleet $fleet1;
     private Fleet $fleet2;
-    private FleetCombatService $fleetCombatService;
     private Battle $battle;
 
     public function setUp(): void
     {
         $this->fleet1 = $this->createMock(Fleet::class);
         $this->fleet2 = $this->createMock(Fleet::class);
-        $this->fleetCombatService = $this->createMock(FleetCombatService::class);
 
         $this->battle = new Battle(
             $this->fleet1,
-            $this->fleet2,
-            $this->fleetCombatService
+            $this->fleet2
         );
-    }
-
-    private function processBattle(): void
-    {
-        foreach ($this->battle->engage() as $battleTurn) {
-            $this->assertTrue($battleTurn);
-        }
-    }
-
-    public function testFleet1AlreadyDestroyedAtStart(): void
-    {
-        $this->fleet1->method('isAlive')->willReturn(false);
-        $this->fleet2->method('isAlive')->willReturn(true);
-        $this->fleetCombatService->expects($this->never())->method('engage');
-
-        $this->processBattle();
-    }
-
-    public function testFleet2AlreadyDestroyedAtStart(): void
-    {
-        $this->fleet1->method('isAlive')->willReturn(true);
-        $this->fleet2->method('isAlive')->willReturn(false);
-        $this->fleetCombatService->expects($this->never())->method('engage');
-
-        $this->processBattle();
     }
 
     public function testFleet1DestroyedAtFirstTurn(): void
@@ -70,9 +42,15 @@ class BattleTest extends TestCase
             ->willReturnOnConsecutiveCalls(true, false, false);
 
         $this->fleet2->method('isAlive')->willReturn(true);
-        $this->fleetCombatService->expects($this->exactly(2))->method('engage')->with($this->fleet1, $this->fleet2);
 
         $this->processBattle();
+    }
+
+    private function processBattle(): void
+    {
+        foreach ($this->battle->engage() as $battleTurn) {
+            $this->assertTrue($battleTurn);
+        }
     }
 
     public function testFleet2DestroyedInFirstTurn(): void
@@ -82,8 +60,6 @@ class BattleTest extends TestCase
         $this->fleet2->expects($this->exactly(2))
             ->method('isAlive')
             ->willReturnOnConsecutiveCalls(true, false);
-
-        $this->fleetCombatService->expects($this->once())->method('engage')->with($this->fleet1, $this->fleet2);
 
         $this->processBattle();
     }
@@ -105,7 +81,6 @@ class BattleTest extends TestCase
             ->method('isAlive')
             ->willReturnOnConsecutiveCalls(...$fleet1IsAliveResult);
         $this->fleet2->method('isAlive')->willReturn(true);
-        $this->fleetCombatService->expects($this->exactly($destroyTurn * 2 - 2))->method('engage');
 
         $currentTurn = 1;
         foreach ($this->battle->engage() as $battleTurn) {
@@ -153,11 +128,7 @@ class BattleTest extends TestCase
 
         $battle = new Battle(
             new Fleet($playerShips),
-            new Fleet($sithShips),
-            new FleetCombatService(
-                new RandomAliveShipTargetSelector(),
-                new ShipDamageProcessor()
-            )
+            new Fleet($sithShips)
         );
 
         $currentTurn = 1;
@@ -166,17 +137,6 @@ class BattleTest extends TestCase
         }
 
         $this->assertEquals(4, $currentTurn);
-    }
-
-    private function createRebelTransport(): Ship
-    {
-        return new Ship(
-            new ShipName('Rebel transport'),
-            new ShipArmor(1),
-            new ShipShields(0),
-            new ShipWeaponSystem([]),
-            new ShipCost(200000)
-        );
     }
 
     private function createDeathStar(): Ship
@@ -204,7 +164,20 @@ class BattleTest extends TestCase
                     ),
                 ]
             ),
-            new ShipCost(1000000000000)
+            new ShipCost(1000000000000),
+            new RandomAliveShipTargetSelector(),
+        );
+    }
+
+    private function createRebelTransport(): Ship
+    {
+        return new Ship(
+            new ShipName('Rebel transport'),
+            new ShipArmor(1),
+            new ShipShields(0),
+            new ShipWeaponSystem([]),
+            new ShipCost(200000),
+            new RandomAliveShipTargetSelector(),
         );
     }
 }

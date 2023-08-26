@@ -19,4 +19,6 @@ interface ShipInterface
     public function getCost(): int;
 
     public function getName(): string;
+
+    public function fireToFleet(Fleet $defendingFleet);
 }

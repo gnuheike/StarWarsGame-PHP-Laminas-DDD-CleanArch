@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace StarWars\Domain\ShipTargeting;
+namespace StarWars\Domain\Ship\ShipTargeting;
 
 use InvalidArgumentException;
 use StarWars\Domain\Ship\Ship;
@@ -31,7 +31,7 @@ class RandomAliveShipTargetSelector
     {
         return array_filter(
             $ships,
-            static fn (Ship $ship) => !$ship->isDestroyed()
+            static fn(Ship $ship) => !$ship->isDestroyed()
         );
     }
 }

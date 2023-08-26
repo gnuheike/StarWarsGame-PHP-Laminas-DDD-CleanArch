@@ -8,7 +8,7 @@ use StarWars\Domain\Fleet\Fleet;
 
 class ProcessBattle
 {
-    public function __construct(private readonly BattleFactoryInterface $battleFactory)
+    public function __construct(private readonly BattleFactory $battleFactory)
     {
     }
 
