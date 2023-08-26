@@ -20,8 +20,8 @@ use StarWars\Domain\Fleet\ShipInterface;
 use StarWars\Domain\FleetCombat\FleetCombatService;
 use StarWars\Domain\Repository\ShipRepositoryInterface;
 use StarWars\Domain\Repository\ShipsProviderInterface;
-use StarWars\Domain\ShipDamageControl\Service\ShipDamageProcessorService;
-use StarWars\Domain\ShipTargeting\RandomAliveShipTargetSelectorService;
+use StarWars\Domain\ShipDamageControl\Service\ShipDamageProcessor;
+use StarWars\Domain\ShipTargeting\RandomAliveShipTargetSelector;
 use StarWars\Infrastructure\ExternalServices\QuickMockerStarshipDataProvider\QuickMockerClient;
 use StarWars\Infrastructure\ExternalServices\QuickMockerStarshipDataProvider\QuickMockerShipMapper;
 use StarWars\Infrastructure\ExternalServices\QuickMockerStarshipDataProvider\QuickMockerShipProvider;
@@ -78,8 +78,8 @@ final class ConsoleGameCommand extends Command
         $battle = new ProcessBattle(
             new BattleFactory(
                 new FleetCombatService(
-                    new RandomAliveShipTargetSelectorService(),
-                    new ShipDamageProcessorService()
+                    new RandomAliveShipTargetSelector(),
+                    new ShipDamageProcessor()
                 )
             )
         );

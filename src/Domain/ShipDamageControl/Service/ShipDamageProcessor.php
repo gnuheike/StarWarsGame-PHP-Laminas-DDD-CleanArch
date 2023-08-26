@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace StarWars\Domain\ShipDamageControl\Service;
 
 use InvalidArgumentException;
-use StarWars\Domain\FleetCombat\ShipDamageProcessorServiceInterface;
 use StarWars\Domain\Ship\Ship;
 use StarWars\Domain\Ship\ShipWeapon;
 
-final class ShipDamageProcessorService implements ShipDamageProcessorServiceInterface
+class ShipDamageProcessor
 {
     public function processShipDamageToShip(Ship $damageEmitter, Ship $damageReceiver): void
     {

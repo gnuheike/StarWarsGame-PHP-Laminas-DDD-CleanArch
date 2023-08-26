@@ -4,7 +4,7 @@ namespace StarWars\Application\UseCase\StoreBattleResult;
 
 use StarWars\Application\UseCase\ProcessBattle\BattleResult;
 
-interface BattleResultRepositoryInterface
+interface BattleResultRepository
 {
     public function store(BattleResult $result): void;
 

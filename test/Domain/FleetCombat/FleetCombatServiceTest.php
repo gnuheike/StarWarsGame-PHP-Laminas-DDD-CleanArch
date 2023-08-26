@@ -5,26 +5,15 @@ namespace Test\Domain\FleetCombat;
 use PHPUnit\Framework\TestCase;
 use StarWars\Domain\Fleet\Fleet;
 use StarWars\Domain\FleetCombat\FleetCombatService;
-use StarWars\Domain\FleetCombat\ShipDamageProcessorServiceInterface;
-use StarWars\Domain\FleetCombat\ShipTargetSelectorServiceInterface;
 use StarWars\Domain\Ship\Ship;
+use StarWars\Domain\ShipDamageControl\Service\ShipDamageProcessor;
+use StarWars\Domain\ShipTargeting\RandomAliveShipTargetSelector;
 
 class FleetCombatServiceTest extends TestCase
 {
     private FleetCombatService $fleetCombatService;
-    private ShipTargetSelectorServiceInterface $shipTargetSelector;
-    private ShipDamageProcessorServiceInterface $shipDamageProcessorService;
-
-    protected function setUp(): void
-    {
-        $this->shipTargetSelector = $this->createMock(ShipTargetSelectorServiceInterface::class);
-        $this->shipDamageProcessorService = $this->createMock(ShipDamageProcessorServiceInterface::class);
-
-        $this->fleetCombatService = new FleetCombatService(
-            $this->shipTargetSelector,
-            $this->shipDamageProcessorService
-        );
-    }
+    private RandomAliveShipTargetSelector $shipTargetSelector;
+    private ShipDamageProcessor $shipDamageProcessorService;
 
     public function testEngage(): void
     {
@@ -51,5 +40,16 @@ class FleetCombatServiceTest extends TestCase
             ->with($this->equalTo($shipMock), $this->equalTo($shipMock));
 
         $this->fleetCombatService->engage($attackingFleetMock, $defendingFleetMock);
+    }
+
+    protected function setUp(): void
+    {
+        $this->shipTargetSelector = $this->createMock(RandomAliveShipTargetSelector::class);
+        $this->shipDamageProcessorService = $this->createMock(ShipDamageProcessor::class);
+
+        $this->fleetCombatService = new FleetCombatService(
+            $this->shipTargetSelector,
+            $this->shipDamageProcessorService
+        );
     }
 }

@@ -7,12 +7,14 @@ namespace StarWars\Domain\FleetCombat;
 use StarWars\Domain\Battle\FleetCombatServiceInterface;
 use StarWars\Domain\Fleet\Fleet;
 use StarWars\Domain\Ship\Ship;
+use StarWars\Domain\ShipDamageControl\Service\ShipDamageProcessor;
+use StarWars\Domain\ShipTargeting\RandomAliveShipTargetSelector;
 
 class FleetCombatService implements FleetCombatServiceInterface
 {
     public function __construct(
-        private readonly ShipTargetSelectorServiceInterface  $fireTargetSelector,
-        private readonly ShipDamageProcessorServiceInterface $damageCalculation
+        private readonly RandomAliveShipTargetSelector $fireTargetSelector,
+        private readonly ShipDamageProcessor $damageCalculation
     ) {
     }
 

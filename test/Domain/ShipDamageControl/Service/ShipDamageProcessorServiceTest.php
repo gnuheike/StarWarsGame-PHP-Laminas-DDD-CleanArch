@@ -8,15 +8,15 @@ use StarWars\Domain\Ship\Ship;
 use StarWars\Domain\Ship\ShipWeapon;
 use StarWars\Domain\Ship\ShipWeaponDamage;
 use StarWars\Domain\Ship\ShipWeaponSystem;
-use StarWars\Domain\ShipDamageControl\Service\ShipDamageProcessorService;
+use StarWars\Domain\ShipDamageControl\Service\ShipDamageProcessor;
 
 class ShipDamageProcessorServiceTest extends TestCase
 {
-    private ShipDamageProcessorService $shipDamageProcessorService;
+    private ShipDamageProcessor $shipDamageProcessorService;
 
     protected function setUp(): void
     {
-        $this->shipDamageProcessorService = new ShipDamageProcessorService();
+        $this->shipDamageProcessorService = new ShipDamageProcessor();
     }
 
     public function testProcessShipDamageToShip(): void

@@ -5,15 +5,15 @@ namespace Test\Domain\ShipTargeting\Service;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use StarWars\Domain\Ship\Ship;
-use StarWars\Domain\ShipTargeting\RandomAliveShipTargetSelectorService;
+use StarWars\Domain\ShipTargeting\RandomAliveShipTargetSelector;
 
 class RandomAliveShipTargetSelectorTest extends TestCase
 {
-    private RandomAliveShipTargetSelectorService $randomAliveShipTargetSelector;
+    private RandomAliveShipTargetSelector $randomAliveShipTargetSelector;
 
     protected function setUp(): void
     {
-        $this->randomAliveShipTargetSelector = new RandomAliveShipTargetSelectorService();
+        $this->randomAliveShipTargetSelector = new RandomAliveShipTargetSelector();
     }
 
     public function testGetShipFromArray(): void

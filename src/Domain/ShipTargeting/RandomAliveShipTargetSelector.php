@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace StarWars\Domain\ShipTargeting;
 
 use InvalidArgumentException;
-use StarWars\Domain\FleetCombat\ShipTargetSelectorServiceInterface;
 use StarWars\Domain\Ship\Ship;
 
-class RandomAliveShipTargetSelectorService implements ShipTargetSelectorServiceInterface
+class RandomAliveShipTargetSelector
 {
     /**
      * @param Ship[] $ships

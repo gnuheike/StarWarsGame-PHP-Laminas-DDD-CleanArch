@@ -15,8 +15,8 @@ use StarWars\Domain\Ship\ShipShields;
 use StarWars\Domain\Ship\ShipWeapon;
 use StarWars\Domain\Ship\ShipWeaponDamage;
 use StarWars\Domain\Ship\ShipWeaponSystem;
-use StarWars\Domain\ShipDamageControl\Service\ShipDamageProcessorService;
-use StarWars\Domain\ShipTargeting\RandomAliveShipTargetSelectorService;
+use StarWars\Domain\ShipDamageControl\Service\ShipDamageProcessor;
+use StarWars\Domain\ShipTargeting\RandomAliveShipTargetSelector;
 
 class BattleTest extends TestCase
 {
@@ -155,8 +155,8 @@ class BattleTest extends TestCase
             new Fleet($playerShips),
             new Fleet($sithShips),
             new FleetCombatService(
-                new RandomAliveShipTargetSelectorService(),
-                new ShipDamageProcessorService()
+                new RandomAliveShipTargetSelector(),
+                new ShipDamageProcessor()
             )
         );
 
