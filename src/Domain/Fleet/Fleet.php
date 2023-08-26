@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace StarWars\Domain\Fleet;
 
 use InvalidArgumentException;
-use StarWars\Domain\Battle\FleetInterface;
 
-class Fleet implements FleetInterface
+class Fleet
 {
     /**
      * @param ShipInterface[] $ships

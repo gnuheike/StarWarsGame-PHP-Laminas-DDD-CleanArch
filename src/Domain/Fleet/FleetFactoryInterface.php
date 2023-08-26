@@ -2,13 +2,12 @@
 
 namespace StarWars\Domain\Fleet;
 
-use StarWars\Domain\Battle\FleetInterface;
 
 interface FleetFactoryInterface
 {
     /**
      * @param ShipInterface[] $ships
-     * @return FleetInterface
+     * @return Fleet
      */
-    public function createFleet(array $ships): FleetInterface;
+    public function createFleet(array $ships): Fleet;
 }

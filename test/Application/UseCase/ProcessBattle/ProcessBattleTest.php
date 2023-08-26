@@ -7,14 +7,14 @@ use StarWars\Application\UseCase\ProcessBattle\BattleFactoryInterface;
 use StarWars\Application\UseCase\ProcessBattle\BattleFleetEnum;
 use StarWars\Application\UseCase\ProcessBattle\ProcessBattle;
 use StarWars\Domain\Battle\Battle;
-use StarWars\Domain\Battle\FleetInterface;
+use StarWars\Domain\Fleet\Fleet;
 
 class ProcessBattleTest extends TestCase
 {
     public function testProcessBattle(): void
     {
-        $fleet1 = $this->createMock(FleetInterface::class);
-        $fleet2 = $this->createMock(FleetInterface::class);
+        $fleet1 = $this->createMock(Fleet::class);
+        $fleet2 = $this->createMock(Fleet::class);
         $battleFactory = $this->createMock(BattleFactoryInterface::class);
         $battle = $this->createMock(Battle::class);
 

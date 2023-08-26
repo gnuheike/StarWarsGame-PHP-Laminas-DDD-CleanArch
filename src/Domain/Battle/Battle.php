@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace StarWars\Domain\Battle;
 
+use StarWars\Domain\Fleet\Fleet;
+
 class Battle
 {
     public function __construct(
-        private readonly FleetInterface              $fleet1,
-        private readonly FleetInterface              $fleet2,
+        private readonly Fleet              $fleet1,
+        private readonly Fleet              $fleet2,
         private readonly FleetCombatServiceInterface $fleetCombatService
     ) {
     }

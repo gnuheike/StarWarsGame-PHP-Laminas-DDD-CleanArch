@@ -2,7 +2,9 @@
 
 namespace StarWars\Domain\Battle;
 
+use StarWars\Domain\Fleet\Fleet;
+
 interface FleetCombatServiceInterface
 {
-    public function engage(FleetInterface $attackingFleet, FleetInterface $defendingFleet): void;
+    public function engage(Fleet $attackingFleet, Fleet $defendingFleet): void;
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace StarWars\Application\UseCase\ProcessBattle;
 
-use StarWars\Domain\Battle\FleetInterface;
+use StarWars\Domain\Fleet\Fleet;
 
 class ProcessBattle
 {
@@ -12,7 +12,7 @@ class ProcessBattle
     {
     }
 
-    public function __invoke(FleetInterface $playerFleet, FleetInterface $enemyFleet): BattleResult
+    public function __invoke(Fleet $playerFleet, Fleet $enemyFleet): BattleResult
     {
         $battle = $this->battleFactory->createBattle($playerFleet, $enemyFleet);
 

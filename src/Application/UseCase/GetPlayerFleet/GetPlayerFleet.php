@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace StarWars\Application\UseCase\GetPlayerFleet;
 
-use StarWars\Domain\Battle\FleetInterface;
+use StarWars\Domain\Fleet\Fleet;
 use StarWars\Domain\Fleet\FleetFactoryInterface;
 use StarWars\Domain\Repository\ShipRepositoryInterface;
 
@@ -16,7 +16,7 @@ class GetPlayerFleet
     ) {
     }
 
-    public function __invoke(): FleetInterface
+    public function __invoke(): Fleet
     {
         return $this->fleetFactory->createFleet(
             $this->playerShipsRepository->getAllShips()

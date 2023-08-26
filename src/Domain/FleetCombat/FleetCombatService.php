@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace StarWars\Domain\FleetCombat;
 
 use StarWars\Domain\Battle\FleetCombatServiceInterface;
-use StarWars\Domain\Battle\FleetInterface;
+use StarWars\Domain\Fleet\Fleet;
 use StarWars\Domain\Ship\Ship;
 
 class FleetCombatService implements FleetCombatServiceInterface
@@ -16,7 +16,7 @@ class FleetCombatService implements FleetCombatServiceInterface
     ) {
     }
 
-    public function engage(FleetInterface $attackingFleet, FleetInterface $defendingFleet): void
+    public function engage(Fleet $attackingFleet, Fleet $defendingFleet): void
     {
         foreach ($attackingFleet->getShips() as $ship) {
             if (!$defendingFleet->isAlive()) {

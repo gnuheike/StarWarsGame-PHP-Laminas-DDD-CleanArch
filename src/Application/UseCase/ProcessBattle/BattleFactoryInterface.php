@@ -3,9 +3,9 @@
 namespace StarWars\Application\UseCase\ProcessBattle;
 
 use StarWars\Domain\Battle\Battle;
-use StarWars\Domain\Battle\FleetInterface;
+use StarWars\Domain\Fleet\Fleet;
 
 interface BattleFactoryInterface
 {
-    public function createBattle(FleetInterface $playerFleet, FleetInterface $enemyFleet): Battle;
+    public function createBattle(Fleet $playerFleet, Fleet $enemyFleet): Battle;
 }
