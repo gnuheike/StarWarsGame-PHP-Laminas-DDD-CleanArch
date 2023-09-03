@@ -14,7 +14,6 @@ use TypeError;
 
 class ShipWeaponsTest extends TestCase
 {
-    /** @noinspection PhpUnhandledExceptionInspection */
     public function testAcceptAndReturnValidShips(): void
     {
         $weaponsArray = [

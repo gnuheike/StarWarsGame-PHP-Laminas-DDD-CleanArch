@@ -16,9 +16,9 @@ class QuickMockerShipFactory
     public function mapArrayToShip(array $shipData): Ship
     {
         $weapons = array_map(
-            static fn (array $weaponData) => [
+            static fn(array $weaponData) => [
                 'name' => $weaponData['name'],
-                'amount' => $weaponData['amount'],
+                'amount' => (int)$weaponData['amount'],
                 'minDamage' => $weaponData['min_damage'],
                 'maxDamage' => $weaponData['max_damage']
             ],
@@ -27,7 +27,7 @@ class QuickMockerShipFactory
 
         return $this->shipFactory->createShip(
             name: $shipData['name'],
-            cost: $shipData['cost_in_credits'],
+            cost: (int)$shipData['cost_in_credits'],
             armor: $shipData['body'],
             shields: $shipData['shields'],
             weapons: $weapons
