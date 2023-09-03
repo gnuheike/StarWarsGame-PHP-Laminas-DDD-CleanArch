@@ -4,24 +4,28 @@ declare(strict_types=1);
 
 namespace StarWars\Application\UseCase\CreateUserFleet;
 
-use StarWars\Domain\Repository\ShipRepositoryInterface;
-use StarWars\Domain\Repository\ShipsProviderInterface;
+use StarWars\Application\Factory\FleetFactory;
+use StarWars\Domain\Fleet\Fleet;
+use StarWars\Domain\Ship\ShipProviderInterface;
 
 class CreateUserFleet
 {
     public function __construct(
-        private readonly ShipsProviderInterface  $shipsRepository,
-        private readonly ShipSelectorInterface   $shipSelector,
-        private readonly ShipRepositoryInterface $userShipsRepository
+        private readonly ShipProviderInterface $shipsRepository,
+        private readonly ShipSelectorInterface $shipSelector,
+        private readonly FleetFactory $fleetFactory,
     ) {
     }
 
-    public function __invoke(): void
+    public function __invoke(): Fleet
     {
-        $ships = $this->shipsRepository->getShips();
+        $availableShips = $this->shipsRepository->getShips();
 
-        while ($ship = $this->shipSelector->selectShip($ships)) {
-            $this->userShipsRepository->addShip($ship);
+        $selectedShips = [];
+        while ($ship = $this->shipSelector->selectShip($availableShips)) {
+            $selectedShips[] = $ship;
         }
+
+        return $this->fleetFactory->createFleet($selectedShips);
     }
 }

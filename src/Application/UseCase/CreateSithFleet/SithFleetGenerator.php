@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace StarWars\Application\UseCase\CreateSithFleet;
 
-use StarWars\Domain\Repository\ShipsProviderInterface;
+use StarWars\Domain\Ship\ShipProviderInterface;
 
-final class SithFleetGenerator implements SithFleetGeneratorInterface
+class SithFleetGenerator
 {
-    public function __construct(private readonly ShipsProviderInterface $shipsProvider)
+    public function __construct(private readonly ShipProviderInterface $shipsProvider)
     {
     }
 

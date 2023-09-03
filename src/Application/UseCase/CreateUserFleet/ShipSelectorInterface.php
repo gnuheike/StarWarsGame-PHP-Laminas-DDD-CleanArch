@@ -2,7 +2,6 @@
 
 namespace StarWars\Application\UseCase\CreateUserFleet;
 
-
 use StarWars\Domain\Ship\Ship;
 
 interface ShipSelectorInterface

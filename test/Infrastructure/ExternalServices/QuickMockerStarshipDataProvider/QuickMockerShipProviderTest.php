@@ -4,16 +4,16 @@ namespace Test\Infrastructure\ExternalServices\QuickMockerStarshipDataProvider;
 
 use JsonException;
 use PHPUnit\Framework\TestCase;
+use StarWars\Application\Adapter\QuickMockerShipProvider;
+use StarWars\Application\Factory\QuickMockerShipFactory;
 use StarWars\Domain\Ship\Ship;
 use StarWars\Infrastructure\ExternalServices\QuickMockerStarshipDataProvider\QuickMockerClient;
-use StarWars\Infrastructure\ExternalServices\QuickMockerStarshipDataProvider\QuickMockerShipMapper;
-use StarWars\Infrastructure\ExternalServices\QuickMockerStarshipDataProvider\QuickMockerShipProvider;
 
 class QuickMockerShipProviderTest extends TestCase
 {
     private array $sampleData;
     private QuickMockerClient $client;
-    private QuickMockerShipMapper $mapper;
+    private QuickMockerShipFactory $mapper;
 
     /**
      * @throws JsonException
@@ -30,7 +30,7 @@ class QuickMockerShipProviderTest extends TestCase
         $this->client = $this->createMock(QuickMockerClient::class);
         $this->client->method('getShips')->willReturn($this->sampleData);
 
-        $this->mapper = $this->createMock(QuickMockerShipMapper::class);
+        $this->mapper = $this->createMock(QuickMockerShipFactory::class);
     }
 
     public function testValidData(): void

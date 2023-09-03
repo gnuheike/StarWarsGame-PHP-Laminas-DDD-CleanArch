@@ -6,26 +6,31 @@ namespace StarWars\Presentation\Console\Command;
 
 use Exception;
 use RuntimeException;
+use StarWars\Application\Adapter\QuickMockerShipProvider;
 use StarWars\Application\Factory\FleetFactory;
+use StarWars\Application\Factory\QuickMockerShipFactory;
+use StarWars\Application\Factory\ShipArmorFactory;
+use StarWars\Application\Factory\ShipCostFactory;
+use StarWars\Application\Factory\ShipFactory;
+use StarWars\Application\Factory\ShipNameFactory;
+use StarWars\Application\Factory\ShipShieldsFactory;
+use StarWars\Application\Factory\ShipWeaponDamageFactory;
+use StarWars\Application\Factory\ShipWeaponFactory;
+use StarWars\Application\Factory\ShipWeaponSystemFactory;
 use StarWars\Application\UseCase\CreateSithFleet\CreateSithFleet;
 use StarWars\Application\UseCase\CreateSithFleet\SithFleetGenerator;
 use StarWars\Application\UseCase\CreateUserFleet\CreateUserFleet;
-use StarWars\Application\UseCase\GetPlayerFleet\GetPlayerFleet;
-use StarWars\Application\UseCase\GetSithFleet\GetSithFleet;
 use StarWars\Application\UseCase\ProcessBattle\BattleFactory;
 use StarWars\Application\UseCase\ProcessBattle\BattleFleetEnum;
+use StarWars\Application\UseCase\ProcessBattle\BattleResult;
 use StarWars\Application\UseCase\ProcessBattle\ProcessBattle;
-use StarWars\Application\UseCase\ProcessGame\ProcessGame;
-use StarWars\Application\UseCase\ProcessGame\ProcessGameResponse;
 use StarWars\Application\UseCase\StoreBattleResult\StoreBattleResult;
-use StarWars\Domain\Repository\ShipRepositoryInterface;
-use StarWars\Domain\Repository\ShipsProviderInterface;
+use StarWars\Domain\Fleet\Fleet;
 use StarWars\Domain\Ship\Ship;
+use StarWars\Domain\Ship\ShipProviderInterface;
+use StarWars\Domain\Ship\ShipTargeting\RandomAliveShipTargetSelector;
 use StarWars\Infrastructure\ExternalServices\QuickMockerStarshipDataProvider\QuickMockerClient;
-use StarWars\Infrastructure\ExternalServices\QuickMockerStarshipDataProvider\QuickMockerShipMapper;
-use StarWars\Infrastructure\ExternalServices\QuickMockerStarshipDataProvider\QuickMockerShipProvider;
 use StarWars\Infrastructure\Persistence\Repository\InMemoryBattleResultRepository;
-use StarWars\Infrastructure\Persistence\Repository\InMemoryShipRepository;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -33,8 +38,30 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class ConsoleGameCommand extends Command
 {
+    private FleetFactory $fleetFactory;
+    private ShipProviderInterface $shipProvider;
+
     protected function configure(): void
     {
+        $this->fleetFactory = new FleetFactory();
+
+        $shipFactory = new ShipFactory(
+            weaponsFactory: new ShipWeaponSystemFactory(
+                new ShipWeaponFactory(
+                    new ShipWeaponDamageFactory()
+                )
+            ),
+            armorFactory: new ShipArmorFactory(),
+            shieldsFactory: new ShipShieldsFactory(),
+            costFactory: new ShipCostFactory(),
+            nameFactory: new ShipNameFactory(),
+            targetSelector: new RandomAliveShipTargetSelector()
+        );
+
+        $this->shipProvider = new QuickMockerShipProvider(
+            new QuickMockerClient('https://sdghze76cm.api.quickmocker.com/starships'),
+            new QuickMockerShipFactory($shipFactory)
+        );
     }
 
     /**
@@ -42,8 +69,7 @@ final class ConsoleGameCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $gameProcessor = $this->createGameProcessor($input, $output);
-        $response = $gameProcessor->__invoke();
+        $battleResult = $this->runGame($input, $output);
 
         $output->writeln('');
         $output->writeln('');
@@ -51,117 +77,89 @@ final class ConsoleGameCommand extends Command
         $output->writeln('Game has ended');
         $output->writeln('---------------------------------</>');
 
-        if ($response->battleResult->getWinner() === BattleFleetEnum::SITH_FLEET) {
-            return $this->displaySithResults($response, $output);
+        if ($battleResult->getWinner() === BattleFleetEnum::SITH_FLEET) {
+            $output->writeln('Sith fleet won!');
+            return 0;
         }
 
-        return $this->processPlayerResults($response, $output);
+        return $this->processPlayerResults($battleResult, $output);
     }
 
     /**
      * @throws Exception
      */
-    private function createGameProcessor(InputInterface $input, OutputInterface $output): ProcessGame
+    private function runGame(InputInterface $input, OutputInterface $output): BattleResult
     {
-        $playerShipsRepository = new InMemoryShipRepository();
-        $sithShipsRepository = new InMemoryShipRepository();
-        $fleetFactory = new FleetFactory();
+        $sithFleet = $this->createSithFleet();
+        $userFleet = $this->createUserFleet($input, $output);
 
-        $shipProvider = $this->createShipProvider();
-        $createSithFleet = $this->createSithFleet($shipProvider, $sithShipsRepository);
-        $createUserFleet = $this->createUserFleet($input, $output, $shipProvider, $playerShipsRepository);
-        $getPlayerFleet = new GetPlayerFleet($playerShipsRepository, $fleetFactory);
-        $getSithFleet = new GetSithFleet($sithShipsRepository, $fleetFactory);
-        $battle = new ProcessBattle(
-            new BattleFactory()
-        );
-
-        return new ProcessGame(
-            $createSithFleet,
-            $createUserFleet,
-            $getPlayerFleet,
-            $getSithFleet,
-            $battle
-        );
-    }
-
-    private function createShipProvider(): QuickMockerShipProvider
-    {
-        return new QuickMockerShipProvider(
-            new QuickMockerClient('https://sdghze76cm.api.quickmocker.com/starships'),
-            new QuickMockerShipMapper()
-        );
+        return (new ProcessBattle(new BattleFactory()))->__invoke($userFleet, $sithFleet);
     }
 
     /**
      * @throws Exception
      */
-    private function createSithFleet(
-        ShipsProviderInterface $shipProvider,
-        ShipRepositoryInterface $sithShipsRepository
-    ): CreateSithFleet {
-        return new CreateSithFleet(
-            new SithFleetGenerator($shipProvider),
-            $sithShipsRepository,
+    private function createSithFleet(): Fleet
+    {
+        $useCase = new CreateSithFleet(
+            new SithFleetGenerator($this->shipProvider),
+            $this->fleetFactory,
             random_int(1, 10)
         );
+
+        return $useCase->__invoke();
     }
 
     private function createUserFleet(
         InputInterface $input,
-        OutputInterface $output,
-        ShipsProviderInterface $shipsProvider,
-        ShipRepositoryInterface $playerShipsRepository
-    ): CreateUserFleet {
+        OutputInterface $output
+    ): Fleet {
         $questionHelper = $this->getHelper('question');
         if (!$questionHelper instanceof QuestionHelper) {
             throw new RuntimeException('Question helper not found');
         }
 
-        return new CreateUserFleet(
-            $shipsProvider,
+        $useCase = new CreateUserFleet(
+            $this->shipProvider,
             new ConsoleShipSelector($input, $output, $questionHelper),
-            $playerShipsRepository
+            $this->fleetFactory
         );
+
+        return $useCase->__invoke();
     }
 
-    private function displaySithResults(ProcessGameResponse $response, OutputInterface $output): int
-    {
-        $output->writeln('Sith fleet won!');
-        return 0;
-    }
-
-    private function processPlayerResults(ProcessGameResponse $response, OutputInterface $output): int
+    private function processPlayerResults(BattleResult $battleResult, OutputInterface $output): int
     {
         $repository = new InMemoryBattleResultRepository();
         $useCase = new StoreBattleResult($repository);
-        $useCase->__invoke($response->battleResult);
-        $this->displayPlayerResults($response, $output);
+        $useCase->__invoke($battleResult);
+
+        $this->displayPlayerResults($battleResult, $output);
 
         return 0;
     }
 
-    private function displayPlayerResults(ProcessGameResponse $response, OutputInterface $output): void
+    private function displayPlayerResults(BattleResult $battleResult, OutputInterface $output): void
     {
         $output->writeln('Player fleet won!');
         $output->writeln('');
 
         $output->writeln(
-            sprintf('Player spent %s credits', $this->getShipsCost($response->battleResult->getPlayerShips()))
+            sprintf('Player spent %s credits', $this->getShipsCost($battleResult->getPlayerShips()))
         );
         $output->writeln('');
 
         $output->writeln('Player fleet ships:');
-        $this->displayShips($response->battleResult->getPlayerShips(), $output);
+        $this->displayShips($battleResult->getPlayerShips(), $output);
         $output->writeln('');
 
 
         $output->writeln('Sith fleet ships:');
-        $this->displayShips($response->battleResult->getSithShips(), $output);
+        $this->displayShips($battleResult->getSithShips(), $output);
         $output->writeln('');
 
         $output->writeln(
-            sprintf('Player spent %s steps', $response->battleResult->getSteps())
+            sprintf('Player spent %s steps', $battleResult->getSteps())
         );
     }
 
@@ -173,7 +171,7 @@ final class ConsoleGameCommand extends Command
     {
         return array_reduce(
             $ships,
-            static fn(int $carry, Ship $ship) => $carry + $ship->cost->getValue(),
+            static fn (int $carry, Ship $ship) => $carry + $ship->cost->getValue(),
             0
         );
     }
@@ -188,7 +186,7 @@ final class ConsoleGameCommand extends Command
         $count = count($ships);
         $namesList = implode(
             ', ',
-            array_map(static fn($ship) => $ship->name->getValue(), $ships)
+            array_map(static fn ($ship) => $ship->name->getValue(), $ships)
         );
 
         $output->writeln(

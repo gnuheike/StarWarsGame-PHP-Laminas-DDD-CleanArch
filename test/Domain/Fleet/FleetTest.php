@@ -12,17 +12,6 @@ class FleetTest extends TestCase
     private $fleet;
     private $ships;
 
-    protected function setUp(): void
-    {
-        $ships = [];
-        for ($i = 0; $i < random_int(1, 100); $i++) {
-            $ships[] = $this->createMock(Ship::class);
-        }
-        $this->ships = $ships;
-
-        $this->fleet = new Fleet($this->ships);
-    }
-
     public function testConstructorWithInvalidShips(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -35,7 +24,6 @@ class FleetTest extends TestCase
     {
         $this->assertSame($this->ships, $this->fleet->getShips());
     }
-
 
     public function testIsAlive(): void
     {
@@ -53,5 +41,16 @@ class FleetTest extends TestCase
         }
 
         $this->assertFalse($this->fleet->isAlive());
+    }
+
+    protected function setUp(): void
+    {
+        $ships = [];
+        for ($i = 0; $i < random_int(1, 100); $i++) {
+            $ships[] = $this->createMock(Ship::class);
+        }
+        $this->ships = $ships;
+
+        $this->fleet = new Fleet($this->ships);
     }
 }

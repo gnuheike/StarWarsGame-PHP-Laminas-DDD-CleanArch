@@ -31,7 +31,7 @@ class RandomAliveShipTargetSelector
     {
         return array_filter(
             $ships,
-            static fn(Ship $ship) => !$ship->isDestroyed()
+            static fn (Ship $ship) => !$ship->isDestroyed()
         );
     }
 }

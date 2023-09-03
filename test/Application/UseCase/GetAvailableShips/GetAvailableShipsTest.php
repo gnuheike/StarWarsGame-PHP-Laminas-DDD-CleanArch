@@ -4,17 +4,17 @@ namespace Test\Application\UseCase\GetAvailableShips;
 
 use PHPUnit\Framework\TestCase;
 use StarWars\Application\UseCase\GetAvailableShips\GetAvailableShips;
-use StarWars\Domain\Repository\ShipsProviderInterface;
 use StarWars\Domain\Ship\Ship;
+use StarWars\Domain\Ship\ShipProviderInterface;
 
 class GetAvailableShipsTest extends TestCase
 {
     private GetAvailableShips $useCase;
-    private ShipsProviderInterface $shipRepository;
+    private ShipProviderInterface $shipRepository;
 
     public function setUp(): void
     {
-        $this->shipRepository = $this->createMock(ShipsProviderInterface::class);
+        $this->shipRepository = $this->createMock(ShipProviderInterface::class);
         $this->useCase = new GetAvailableShips($this->shipRepository);
     }
 

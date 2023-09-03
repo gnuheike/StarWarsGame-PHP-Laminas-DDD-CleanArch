@@ -3,11 +3,11 @@
 namespace Test\Application\UseCase\CreateUserFleet;
 
 use PHPUnit\Framework\TestCase;
+use StarWars\Application\Factory\FleetFactory;
 use StarWars\Application\UseCase\CreateUserFleet\CreateUserFleet;
 use StarWars\Application\UseCase\CreateUserFleet\ShipSelectorInterface;
-use StarWars\Domain\Repository\ShipRepositoryInterface;
-use StarWars\Domain\Repository\ShipsProviderInterface;
 use StarWars\Domain\Ship\Ship;
+use StarWars\Domain\Ship\ShipProviderInterface;
 
 class CreateUserFleetTest extends TestCase
 {
@@ -15,7 +15,7 @@ class CreateUserFleetTest extends TestCase
     {
         $ship = $this->createMock(Ship::class);
 
-        $shipsRepositoryMock = $this->createMock(ShipsProviderInterface::class);
+        $shipsRepositoryMock = $this->createMock(ShipProviderInterface::class);
         $shipsRepositoryMock->expects($this->once())
             ->method('getShips')
             ->willReturn([$ship]);
@@ -25,12 +25,8 @@ class CreateUserFleetTest extends TestCase
             ->method('selectShip')
             ->willReturnOnConsecutiveCalls($ship, null);
 
-        $userShipsRepositoryMock = $this->createMock(ShipRepositoryInterface::class);
-        $userShipsRepositoryMock->expects($this->once())
-            ->method('addShip')
-            ->with($ship);
 
-        $useCase = new CreateUserFleet($shipsRepositoryMock, $selectorMock, $userShipsRepositoryMock);
+        $useCase = new CreateUserFleet($shipsRepositoryMock, $selectorMock, new FleetFactory());
         $useCase->__invoke();
     }
 

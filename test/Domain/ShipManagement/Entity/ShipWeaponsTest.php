@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 
@@ -14,6 +15,17 @@ use TypeError;
 class ShipWeaponsTest extends TestCase
 {
     /** @noinspection PhpUnhandledExceptionInspection */
+    public function testAcceptAndReturnValidShips(): void
+    {
+        $weaponsArray = [
+            $this->getWeapon(),
+            $this->getWeapon()
+        ];
+
+        $weapons = new ShipWeaponSystem($weaponsArray);
+        $this->assertEquals($weapons->getAllWeapons(), $weaponsArray);
+    }
+
     private function getWeapon(): ShipWeapon
     {
         $min = random_int(0, PHP_INT_MAX - 1);
@@ -25,17 +37,6 @@ class ShipWeaponsTest extends TestCase
             10,
             $damage
         );
-    }
-
-    public function testAcceptAndReturnValidShips(): void
-    {
-        $weaponsArray = [
-            $this->getWeapon(),
-            $this->getWeapon()
-        ];
-
-        $weapons = new ShipWeaponSystem($weaponsArray);
-        $this->assertEquals($weapons->getAllWeapons(), $weaponsArray);
     }
 
     public function testConstructorThrowsExceptionIfWeaponsIsNotAnArray(): void

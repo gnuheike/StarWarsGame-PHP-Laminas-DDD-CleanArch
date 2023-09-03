@@ -1,13 +1,14 @@
 <?php
+
 declare(strict_types=1);
 
 
 namespace Test\Application\UseCase\CreateSithFleet;
 
 use PHPUnit\Framework\TestCase;
+use StarWars\Application\Factory\FleetFactory;
 use StarWars\Application\UseCase\CreateSithFleet\CreateSithFleet;
-use StarWars\Application\UseCase\CreateSithFleet\SithFleetGeneratorInterface;
-use StarWars\Domain\Repository\ShipRepositoryInterface;
+use StarWars\Application\UseCase\CreateSithFleet\SithFleetGenerator;
 use StarWars\Domain\Ship\Ship;
 
 final class CreateSithFleetTest extends TestCase
@@ -21,22 +22,12 @@ final class CreateSithFleetTest extends TestCase
             $this->createMock(Ship::class),
         ];
 
-        $generatorMock = $this->createMock(SithFleetGeneratorInterface::class);
+        $generatorMock = $this->createMock(SithFleetGenerator::class);
         $generatorMock->expects($this->once())
             ->method('generateShips')
             ->willReturn($ships);
 
-        $repoMock = $this->createMock(ShipRepositoryInterface::class);
-
-        $matcher = $this->exactly(count($ships));
-        $repoMock->expects($matcher)
-            ->method('addShip')
-            ->willReturnCallback(
-                fn(Ship $ship) => $this->assertEquals($ships[$matcher->hasBeenInvoked()], $ship)
-            );
-
-
-        $useCase = new CreateSithFleet($generatorMock, $repoMock, 100);
+        $useCase = new CreateSithFleet($generatorMock, new FleetFactory(), 100);
         $useCase->__invoke();
     }
 }

@@ -11,21 +11,21 @@ class ShipArmor
     /**
      * @throws InvalidArgumentException if the $armor value is less than 0.
      */
-    public function __construct(private int $armor)
+    public function __construct(private int $value)
     {
-        if ($armor < 0) {
+        if ($value < 0) {
             throw new InvalidArgumentException('Armor must be a positive integer');
         }
     }
 
     public function receiveDamage(int $damage): int
     {
-        $this->armor -= $damage;
-        return $this->armor < 0 ? abs($this->armor) : 0;
+        $this->value -= $damage;
+        return $this->value < 0 ? abs($this->value) : 0;
     }
 
     public function isDepleted(): bool
     {
-        return $this->armor < 1;
+        return $this->value < 1;
     }
 }

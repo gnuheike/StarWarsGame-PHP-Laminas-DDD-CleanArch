@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace StarWars\Application\Factory;
 
 use StarWars\Domain\Fleet\Fleet;
-use StarWars\Domain\Fleet\FleetFactoryInterface;
+use StarWars\Domain\Ship\Ship;
 
-class FleetFactory implements FleetFactoryInterface
+class FleetFactory
 {
     /**
-     * @inheritDoc
+     * @param Ship[] $ships
+     * @return Fleet
      */
     public function createFleet(array $ships): Fleet
     {

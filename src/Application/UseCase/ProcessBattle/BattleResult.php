@@ -9,7 +9,7 @@ use StarWars\Domain\Ship\Ship;
 
 class BattleResult
 {
-    private int $steps;
+    private BattleResultSteps $steps;
     private BattleFleetEnum $winner;
 
     /**
@@ -26,7 +26,7 @@ class BattleResult
             }
         }
 
-        $this->steps = 0;
+        $this->steps = new BattleResultSteps(0);
     }
 
     public function getPlayerShips(): array
@@ -41,12 +41,12 @@ class BattleResult
 
     public function getSteps(): int
     {
-        return $this->steps;
+        return $this->steps->getSteps();
     }
 
     public function incrementSteps(): void
     {
-        $this->steps++;
+        $this->steps->incrementSteps();
     }
 
     public function getWinner(): BattleFleetEnum

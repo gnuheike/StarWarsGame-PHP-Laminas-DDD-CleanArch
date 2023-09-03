@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace StarWars\Application\UseCase\GetAvailableShips;
 
-use StarWars\Domain\Fleet\ShipInterface;
-use StarWars\Domain\Repository\ShipsProviderInterface;
+use StarWars\Domain\Ship\Ship;
+use StarWars\Domain\Ship\ShipProviderInterface;
 
 final class GetAvailableShips
 {
-    public function __construct(private readonly ShipsProviderInterface $shipRepository)
+    public function __construct(private readonly ShipProviderInterface $shipRepository)
     {
     }
 
     /**
-     * @return ShipInterface[]
+     * @return Ship[]
      */
     public function __invoke(): array
     {
