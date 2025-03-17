@@ -209,4 +209,4 @@ public function getShips(): array
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project has no specific license. For use or redistribution, please contact the maintainers.
