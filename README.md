@@ -1,3 +1,5 @@
+[![StarWars Fleet Battle Simulator](https://github.com/gnuheike/StarWarsGame-DDD-CleanArch/blob/main/cover.jpg?raw=true)](https://github.com/gnuheike/StarWarsGame-DDD-CleanArch)
+
 # StarWars Fleet Battle Simulator
 
 A PHP-based simulation game where two space fleets engage in battle. The project uses Domain-Driven Design and common
