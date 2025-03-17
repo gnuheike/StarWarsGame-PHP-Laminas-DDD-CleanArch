@@ -42,8 +42,9 @@
       ]
     }
   },
+  "minimum-stability": "dev",
   "require": {
-    "php": "~8.2.0",
+    "php": "~8.1.0 || ~8.2.0 || ~8.3.0",
     "composer/package-versions-deprecated": "^1.10.99",
     "jsoumelidis/zend-sf-di-config": "^0.5",
     "laminas/laminas-cli": "^1.8",
