@@ -204,9 +204,3 @@ public function getShips(): array
    ```bash
    ./vendor/bin/phpunit
    ```
-
----
-
-## License
-
-This project has no specific license. For use or redistribution, please contact the maintainers.
